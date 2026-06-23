@@ -14,7 +14,8 @@ export interface AuthSession {
 
 interface AuthStore {
   session: AuthSession | null;
-  credentials: Credential[];
+  importedCredentials: Credential[];
+  _hydrated: boolean;
   login: (employeeId: string, password: string) => { ok: boolean; error?: string };
   logout: () => void;
   addCredentials: (creds: Credential[]) => void;
@@ -24,13 +25,21 @@ export const useAuthStore = create<AuthStore>()(
   persist(
     (set, get) => ({
       session: null,
-      credentials: SEED_CREDENTIALS,
+      importedCredentials: [],
+      _hydrated: false,
 
       login(employeeId, password) {
-        const match = get().credentials.find(
-          (c) => c.employeeId.toLowerCase() === employeeId.trim().toLowerCase() && c.password === password
+        const id = employeeId.trim().toLowerCase();
+        const allCreds = [...get().importedCredentials, ...SEED_CREDENTIALS];
+        const match = allCreds.find(
+          (c) => c.employeeId.toLowerCase() === id && c.password === password
         );
-        if (!match) return { ok: false, error: "Invalid credentials. Please try again." };
+        if (!match) {
+          return {
+            ok: false,
+            error: "Invalid credentials. Try employee / RideShare@2025 or EMP-0012 / RideShare@2025",
+          };
+        }
         set({
           session: {
             userId: match.userId,
@@ -49,14 +58,26 @@ export const useAuthStore = create<AuthStore>()(
 
       addCredentials(creds) {
         set((s) => {
-          const existing = new Set(s.credentials.map((c) => c.employeeId.toLowerCase()));
-          const novel = creds.filter((c) => !existing.has(c.employeeId.toLowerCase()));
-          return { credentials: [...s.credentials, ...novel] };
+          const byId = new Map(s.importedCredentials.map((c) => [c.employeeId.toLowerCase(), c]));
+          for (const c of creds) {
+            byId.set(c.employeeId.toLowerCase(), c);
+          }
+          return { importedCredentials: Array.from(byId.values()) };
         });
       },
     }),
     {
       name: "rideshare-auth-v1",
+      partialize: (state) => ({ session: state.session, importedCredentials: state.importedCredentials }),
+      merge: (persisted, current) => ({
+        ...current,
+        session: (persisted as Partial<AuthStore>)?.session ?? null,
+        importedCredentials: (persisted as Partial<AuthStore>)?.importedCredentials ?? [],
+        _hydrated: true,
+      }),
+      onRehydrateStorage: () => () => {
+        useAuthStore.setState({ _hydrated: true });
+      },
     }
   )
 );
