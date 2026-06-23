@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { RideCard } from "@/components/RideCard";
@@ -11,7 +11,7 @@ import { useSearchResults } from "@/lib/mock/hooks";
 import type { GenderPref, RideType } from "@/lib/mock/types";
 
 export default function SearchContent() {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
   const userId = session?.user?.id ?? "";

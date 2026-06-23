@@ -1,13 +1,17 @@
 "use client";
 
-import { signOut, useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
+import { useAuthStore } from "@/lib/auth-store";
 import { AppShell } from "@/components/AppShell";
 import { Avatar, VerifiedBadge } from "@/components/Badges";
 import { useRideStore } from "@/lib/mock/store";
 import { useStoreUser } from "@/lib/mock/hooks";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
+  const router = useRouter();
+  const logout = useAuthStore((s) => s.logout);
   const userId = session?.user?.id ?? "";
   const user = useStoreUser(userId);
   const reset = useRideStore((s) => s.reset);
@@ -50,7 +54,10 @@ export default function ProfilePage() {
           Reset demo data
         </button>
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => {
+            logout();
+            router.push("/login");
+          }}
           className="w-full rounded border border-danger bg-danger-light px-4 py-3 text-sm font-medium text-danger"
         >
           Sign out

@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
 import { AppShell } from "@/components/AppShell";
 import { useRideStore } from "@/lib/mock/store";
 import { useUserNotifications } from "@/lib/mock/hooks";
 
 export default function NotificationsPage() {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const userId = session?.user?.id ?? "";
   const notifications = useUserNotifications(userId);
   const markAllRead = useRideStore((s) => s.markAllRead);

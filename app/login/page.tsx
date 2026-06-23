@@ -1,29 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/auth-store";
 
 export default function LoginPage() {
   const router = useRouter();
+  const login = useAuthStore((s) => s.login);
   const [employeeId, setEmployeeId] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const res = await signIn("credentials", {
-      employeeId,
-      password,
-      redirect: false,
-    });
+    const res = login(employeeId, password);
     setLoading(false);
-    if (res?.error) {
-      setError("Invalid credentials. Please try again.");
+    if (!res.ok) {
+      setError(res.error ?? "Invalid credentials. Please try again.");
       return;
     }
     router.push("/");
@@ -55,7 +52,7 @@ export default function LoginPage() {
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               className="w-full rounded border border-border px-3 py-2.5 text-sm focus:border-accent focus:outline-none"
-              placeholder="employee"
+              placeholder="EMP-0012"
               autoComplete="username"
               required
             />
@@ -93,27 +90,21 @@ export default function LoginPage() {
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
-
-          <div className="my-5 flex items-center gap-3 text-xs text-text-faint">
-            <div className="h-px flex-1 bg-border" />
-            <span>— or —</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-
-          <button
-            type="button"
-            onClick={() => alert("SSO not configured in demo. Use employee / RideShare@2025")}
-            className="w-full rounded border border-border py-2.5 text-sm font-medium text-text-muted hover:bg-surface-hover"
-          >
-            Sign in with company SSO
-          </button>
         </form>
 
         <p className="mt-4 text-center text-xs text-text-muted">
           Trouble signing in? Contact IT helpdesk
         </p>
         <div className="mt-6 rounded bg-accent-light p-3 text-xs text-accent-dark">
-          <strong>Demo:</strong> employee / RideShare@2025 · admin / Admin@2025
+          <strong>Demo logins:</strong>
+          <table className="mt-1.5 w-full text-left">
+            <tbody>
+              <tr><td className="pr-2 font-medium">EMP-0012</td><td>RideShare@2025</td><td className="text-text-muted">Priya</td></tr>
+              <tr><td className="pr-2 font-medium">EMP-0042</td><td>RideShare@2025</td><td className="text-text-muted">Rahul</td></tr>
+              <tr><td className="pr-2 font-medium">EMP-0003</td><td>RideShare@2025</td><td className="text-text-muted">Sunita</td></tr>
+              <tr><td className="pr-2 font-medium">EMP-0099</td><td>Admin@2025</td><td className="text-text-muted">Admin</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

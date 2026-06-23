@@ -4,11 +4,11 @@ import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { Avatar } from "@/components/Badges";
 import { useMessageThreads } from "@/lib/mock/hooks";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
 import { formatDate } from "@/lib/utils";
 
 export default function MessagesPage() {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const userId = session?.user?.id ?? "";
   const threads = useMessageThreads(userId);
 

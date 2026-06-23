@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
 import { MobileNav } from "@/components/MobileNav";
 
 export function AppShell({
@@ -13,7 +13,7 @@ export function AppShell({
   title?: string;
   showBell?: boolean;
 }) {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const unread = 2; // simplified for demo header badge
 
   return (

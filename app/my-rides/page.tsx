@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
 import { Avatar, StatusBadge } from "@/components/Badges";
@@ -12,7 +12,7 @@ import { formatDate } from "@/lib/utils";
 type Tab = "active" | "past" | "requests";
 
 export default function MyRidesPage() {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const userId = session?.user?.id ?? "";
   const approveRequest = useRideStore((s) => s.approveRequest);
   const rejectRequest = useRideStore((s) => s.rejectRequest);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
 import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { useRideStore } from "@/lib/mock/store";
@@ -9,7 +9,7 @@ import { useStoreUser, useUserVehicles } from "@/lib/mock/hooks";
 import type { GenderPref, RideType } from "@/lib/mock/types";
 
 export default function PostRidePage() {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const router = useRouter();
   const userId = session?.user?.id ?? "";
   const user = useStoreUser(userId);

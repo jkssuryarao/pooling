@@ -1,6 +1,6 @@
 "use client";
 
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/lib/auth-store";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AppShell } from "@/components/AppShell";
@@ -10,7 +10,7 @@ import { useStoreUser, useSuggestedRides } from "@/lib/mock/hooks";
 import { greeting } from "@/lib/utils";
 
 export default function HomePage() {
-  const { data: session } = useSession();
+  const { data: session } = useAuth();
   const router = useRouter();
   const userId = session?.user?.id ?? "";
   const user = useStoreUser(userId);
