@@ -87,7 +87,7 @@ interface Store extends MockState {
     topRoutes: { route: string; count: number }[];
   };
   exportCsv: () => string;
-  importUsers: (rows: { employeeId: string; name: string; email: string; department: string; homeLocality: string; gender: "MALE" | "FEMALE" }[]) => { added: number; errors: string[] };
+  importUsers: (rows: { employeeId: string; name: string; email: string; department: string; homeLocality: string; gender: "MALE" | "FEMALE"; password?: string }[]) => { added: number; updated: number; errors: string[] };
 }
 
 function pickState(s: MockState): MockState {
@@ -629,37 +629,58 @@ export const useRideStore = create<Store>()(
       importUsers: (rows) => {
         const errors: string[] = [];
         const added: User[] = [];
-        const existingIds = new Set(get().users.map((u) => u.employeeId.toLowerCase()));
+        let updated = 0;
+        const users = get().users;
+        const byEmployeeId = new Map(users.map((u) => [u.employeeId.toLowerCase(), u]));
 
         for (let i = 0; i < rows.length; i++) {
           const row = rows[i];
-          if (existingIds.has(row.employeeId.toLowerCase())) {
-            errors.push(`Row ${i + 1}: duplicate employeeId ${row.employeeId}`);
+          if (!row.employeeId?.trim()) {
+            errors.push(`Row ${i + 1}: missing employeeId`);
             continue;
           }
-          existingIds.add(row.employeeId.toLowerCase());
-          added.push({
-            id: uid("user-import"),
-            employeeId: row.employeeId,
-            name: row.name,
-            email: row.email,
-            department: row.department,
-            homeLocality: row.homeLocality,
-            commuteDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
-            commuteTimeFrom: "08:30",
-            commuteTimeTo: "09:30",
-            avgRating: 0,
-            tripCount: 0,
-            isVerified: true,
-            isActive: true,
-            gender: row.gender,
-          });
+          if (!row.name?.trim()) {
+            errors.push(`Row ${i + 1}: missing name`);
+            continue;
+          }
+
+          const existing = byEmployeeId.get(row.employeeId.toLowerCase());
+          if (existing) {
+            updated++;
+            byEmployeeId.set(row.employeeId.toLowerCase(), {
+              ...existing,
+              name: row.name.trim(),
+              email: row.email.trim(),
+              department: row.department.trim(),
+              homeLocality: row.homeLocality.trim(),
+              gender: row.gender,
+            });
+          } else {
+            const user: User = {
+              id: uid("user-import"),
+              employeeId: row.employeeId.trim(),
+              name: row.name.trim(),
+              email: row.email.trim(),
+              department: row.department.trim(),
+              homeLocality: row.homeLocality.trim(),
+              commuteDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+              commuteTimeFrom: "08:30",
+              commuteTimeTo: "09:30",
+              avgRating: 0,
+              tripCount: 0,
+              isVerified: true,
+              isActive: true,
+              gender: row.gender,
+            };
+            added.push(user);
+            byEmployeeId.set(row.employeeId.toLowerCase(), user);
+          }
         }
 
-        if (added.length > 0) {
-          set((s) => ({ users: [...s.users, ...added] }));
+        if (added.length > 0 || updated > 0) {
+          set({ users: Array.from(byEmployeeId.values()) });
         }
-        return { added: added.length, errors };
+        return { added: added.length, updated, errors };
       },
     }),
     { name: "rideshare-mock-v1" }
