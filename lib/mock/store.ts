@@ -87,6 +87,7 @@ interface Store extends MockState {
     topRoutes: { route: string; count: number }[];
   };
   exportCsv: () => string;
+  importUsers: (rows: { employeeId: string; name: string; email: string; department: string; homeLocality: string; gender: "MALE" | "FEMALE" }[]) => { added: number; errors: string[] };
 }
 
 function pickState(s: MockState): MockState {
@@ -623,6 +624,42 @@ export const useRideStore = create<Store>()(
           })
           .join("\n");
         return header + rows;
+      },
+
+      importUsers: (rows) => {
+        const errors: string[] = [];
+        const added: User[] = [];
+        const existingIds = new Set(get().users.map((u) => u.employeeId.toLowerCase()));
+
+        for (let i = 0; i < rows.length; i++) {
+          const row = rows[i];
+          if (existingIds.has(row.employeeId.toLowerCase())) {
+            errors.push(`Row ${i + 1}: duplicate employeeId ${row.employeeId}`);
+            continue;
+          }
+          existingIds.add(row.employeeId.toLowerCase());
+          added.push({
+            id: uid("user-import"),
+            employeeId: row.employeeId,
+            name: row.name,
+            email: row.email,
+            department: row.department,
+            homeLocality: row.homeLocality,
+            commuteDays: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+            commuteTimeFrom: "08:30",
+            commuteTimeTo: "09:30",
+            avgRating: 0,
+            tripCount: 0,
+            isVerified: true,
+            isActive: true,
+            gender: row.gender,
+          });
+        }
+
+        if (added.length > 0) {
+          set((s) => ({ users: [...s.users, ...added] }));
+        }
+        return { added: added.length, errors };
       },
     }),
     { name: "rideshare-mock-v1" }
