@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0078D4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>RideShare — Tally Solutions</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --accent:#0078D4;--accent2:#005A9E;--accent-l:#EFF6FC;
+  --green:#107C10;--green-l:#DFF6DD;--amber:#7A5200;--amber-l:#FFF4CE;
+  --red:#A4262C;--red-l:#FDE7E9;
+  --text:#201F1E;--text2:#605E5C;--text3:#A19F9D;
+  --border:#EDEBE9;--bg:#FFF;--bg-s:#FAF9F8;--bg-h:#F3F2F1;
+  --r:12px;--r-sm:8px;
+  --nav-h:64px;--header-h:56px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 4px 12px rgba(0,0,0,.04);
+}
+html{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg-h);color:var(--text);font-size:15px;line-height:1.45;
+  min-height:100%;overscroll-behavior:none;
+}
+.hidden{display:none!important}
+
+/* ── Login ── */
+#screen-login{
+  min-height:100dvh;display:flex;flex-direction:column;
+  padding:calc(24px + var(--safe-t)) 20px 24px;
+  background:linear-gradient(165deg,var(--accent-l) 0%,var(--bg-h) 45%);
+}
+.login-hero{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:400px;width:100%;margin:0 auto}
+.login-logo{
+  width:72px;height:72px;background:var(--bg);border-radius:18px;
+  display:flex;align-items:center;justify-content:center;margin:0 auto 20px;
+  box-shadow:var(--shadow);color:var(--accent);
+}
+.login-logo svg{width:36px;height:36px;stroke:var(--accent);fill:none;stroke-width:2}
+.login-title{text-align:center;font-size:26px;font-weight:700;letter-spacing:-.02em}
+.login-sub{text-align:center;color:var(--text2);font-size:14px;margin:6px 0 28px}
+.login-card{background:var(--bg);border-radius:var(--r);padding:20px;box-shadow:var(--shadow)}
+.login-card label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);display:block;margin-top:14px}
+.login-card label:first-child{margin-top:0}
+.login-card input{
+  width:100%;margin-top:6px;padding:14px 12px;border:1px solid var(--border);
+  border-radius:var(--r-sm);font-size:16px;font-family:inherit;background:var(--bg-s);
+}
+.login-card input:focus{outline:none;border-color:var(--accent);background:var(--bg)}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:14px 20px;border-radius:var(--r-sm);font-size:15px;font-weight:600;
+  font-family:inherit;cursor:pointer;border:none;min-height:48px;
+  transition:transform .1s,opacity .15s;
+}
+.btn:active{transform:scale(.98);opacity:.9}
+.btn-primary{background:var(--accent);color:#fff;width:100%;box-shadow:0 2px 8px rgba(0,120,212,.35)}
+.btn-ghost{background:var(--bg-s);color:var(--text2);border:1px solid var(--border)}
+.btn-sm{padding:8px 14px;font-size:13px;min-height:36px}
+.err{color:var(--red);font-size:13px;margin-top:10px}
+.demo-tip{
+  margin-top:20px;padding:14px;background:rgba(255,255,255,.7);border-radius:var(--r-sm);
+  font-size:12px;color:var(--accent2);line-height:1.6;border:1px solid var(--accent-l);
+}
+
+/* ── App shell ── */
+#screen-app{display:flex;flex-direction:column;min-height:100dvh;max-width:480px;margin:0 auto;background:var(--bg-h)}
+.app-header{
+  position:sticky;top:0;z-index:40;flex-shrink:0;
+  padding:calc(10px + var(--safe-t)) 16px 10px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+}
+.app-header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.app-header h1{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.app-header p{font-size:12px;color:var(--text2);margin-top:1px}
+.header-avatar{
+  width:40px;height:40px;border-radius:50%;background:var(--accent-l);color:var(--accent2);
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;
+}
+.app-main{
+  flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:16px 16px calc(var(--nav-h) + var(--safe-b) + 16px);
+}
+.section-title{font-size:13px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 10px}
+.section-title:first-child{margin-top:0}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat{
+  background:var(--bg);border-radius:var(--r);padding:16px;
+  box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.04);
+}
+.stat-n{font-size:28px;font-weight:700;color:var(--accent2);line-height:1}
+.stat-l{font-size:12px;color:var(--text2);margin-top:4px}
+
+/* ── Cards ── */
+.card{background:var(--bg);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.04)}
+.card-title{font-size:16px;font-weight:600;margin-bottom:12px}
+.card label{font-size:12px;font-weight:500;color:var(--text2);display:block;margin-top:12px}
+.card label:first-of-type{margin-top:0}
+.card input,.card select,.card textarea{
+  width:100%;margin-top:6px;padding:12px;border:1px solid var(--border);
+  border-radius:var(--r-sm);font-size:16px;font-family:inherit;background:var(--bg-s);
+}
+.card input:focus,.card select:focus,.card textarea:focus{outline:none;border-color:var(--accent);background:var(--bg)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── Ride cards ── */
+.ride-list{display:flex;flex-direction:column;gap:10px}
+.ride{
+  background:var(--bg);border-radius:var(--r);padding:14px;
+  box-shadow:var(--shadow);border:1px solid rgba(0,0,0,.04);
+  cursor:pointer;transition:transform .12s;
+}
+.ride:active{transform:scale(.99)}
+.ride.dim{opacity:.6}
+.ride-top{display:flex;gap:12px;align-items:flex-start}
+.ride-avatar{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:700;
+}
+.ride-body{flex:1;min-width:0}
+.ride-name{font-size:15px;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.ride-dept{font-size:12px;color:var(--text2);margin-top:2px}
+.ride-loc{font-size:13px;color:var(--text);margin-top:6px;display:flex;align-items:center;gap:4px}
+.ride-right{text-align:right;flex-shrink:0}
+.ride-time{font-size:17px;font-weight:700;color:var(--accent2)}
+.ride-seats{font-size:11px;font-weight:600;margin-top:2px}
+.seats-ok{color:var(--green)}.seats-warn{color:var(--amber)}.seats-full{color:var(--red)}
+.ride-footer{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.pill-type{background:var(--accent-l);color:var(--accent2)}
+.pill-active{background:var(--green-l);color:var(--green)}
+.pill-full{background:var(--amber-l);color:var(--amber)}
+
+/* ── Profile ── */
+.profile-hero{text-align:center;padding:24px 16px}
+.profile-avatar{
+  width:80px;height:80px;border-radius:50%;margin:0 auto 12px;
+  display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;
+  background:var(--accent-l);color:var(--accent2);
+}
+.profile-name{font-size:20px;font-weight:700}
+.profile-meta{font-size:13px;color:var(--text2);margin-top:4px}
+.profile-row{
+  display:flex;justify-content:space-between;padding:14px 0;
+  border-bottom:1px solid var(--border);font-size:14px;
+}
+.profile-row:last-child{border-bottom:none}
+.profile-row span:last-child{font-weight:500;color:var(--text)}
+
+/* ── Bottom nav ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;z-index:50;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid var(--border);
+  padding-bottom:var(--safe-b);
+  display:flex;justify-content:space-around;
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:8px 4px 10px;min-height:var(--nav-h);
+  border:none;background:none;font-family:inherit;font-size:10px;font-weight:500;
+  color:var(--text3);cursor:pointer;transition:color .15s;
+}
+.nav-item svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8}
+.nav-item.on{color:var(--accent)}
+.nav-item.on svg{stroke-width:2.2}
+.nav-item:active{opacity:.7}
+
+/* ── Modal / bottom sheet ── */
+.sheet-bg{
+  position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;
+  display:flex;align-items:flex-end;justify-content:center;
+  animation:fadeIn .2s ease;
+}
+.sheet-bg.center{align-items:center;padding:20px}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.sheet{
+  background:var(--bg);width:100%;max-width:480px;
+  border-radius:var(--r) var(--r) 0 0;padding:8px 20px calc(20px + var(--safe-b));
+  max-height:85dvh;overflow-y:auto;
+  animation:slideUp .28s cubic-bezier(.32,.72,0,1);
+}
+.sheet.center-sheet{border-radius:var(--r);padding:24px;max-height:90dvh}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:4px auto 16px}
+.sheet h2{font-size:20px;font-weight:700;margin-bottom:4px}
+.sheet-meta{font-size:13px;color:var(--text2)}
+.sheet-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.sheet-cell label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+.sheet-cell div{font-size:15px;font-weight:500;margin-top:2px}
+.sheet-note{font-size:12px;color:var(--text3);font-style:italic;margin:12px 0}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text2)}
+.empty-state svg{width:48px;height:48px;stroke:var(--text3);margin-bottom:12px}
+
+/* ── Desktop ── */
+@media(min-width:481px){
+  body{background:linear-gradient(135deg,#e8f4fc,#f3f2f1)}
+  #screen-app,#screen-login .login-hero{box-shadow:0 0 40px rgba(0,0,0,.08)}
+  #screen-app{border-radius:0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,.sheet,.sheet-bg{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-hero">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41"/></svg>
+    </div>
+    <h1 class="login-title">RideShare</h1>
+    <p class="login-sub">Tally Solutions · Employee carpooling</p>
+    <div class="login-card">
+      <label for="login-id">Employee ID</label>
+      <input id="login-id" placeholder="employee or EMP-0012" autocomplete="username" enterkeyhint="next">
+      <label for="login-pass">Password</label>
+      <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" enterkeyhint="go">
+      <p id="login-err" class="err hidden"></p>
+      <button class="btn btn-primary" style="margin-top:18px" onclick="doLogin()">Sign in</button>
+    </div>
+    <div class="demo-tip">
+      <strong>Demo:</strong> employee / RideShare@2025 · admin / Admin@2025
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app" class="hidden">
+  <header class="app-header">
+    <div class="app-header-inner">
+      <div>
+        <h1 id="page-title">Home</h1>
+        <p id="greeting">RideShare</p>
+      </div>
+      <div class="header-avatar" id="header-avatar">PJ</div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div id="view-home">
+      <div class="stats">
+        <div class="stat"><div class="stat-n" id="st-rides">0</div><div class="stat-l">Open rides</div></div>
+        <div class="stat"><div class="stat-n" id="st-seats">0</div><div class="stat-l">Seats free</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Find a ride</div>
+        <label>Date</label><input type="date" id="s-date">
+        <label>Home area</label><input id="s-area" value="HSR Layout">
+        <div class="form-row">
+          <div><label>From</label><input type="time" id="s-from" value="08:00"></div>
+          <div><label>To</label><input type="time" id="s-to" value="09:30"></div>
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="doSearch()">Search rides</button>
+      </div>
+      <div class="section-title">Suggested rides</div>
+      <div id="ride-list" class="ride-list"></div>
+    </div>
+
+    <div id="view-search" class="hidden">
+      <p id="search-summary" style="font-size:13px;color:var(--text2);margin-bottom:12px"></p>
+      <div id="search-results" class="ride-list"></div>
+    </div>
+
+    <div id="view-post" class="hidden">
+      <div class="card">
+        <div class="card-title">Post a ride</div>
+        <label>Pickup area</label><input id="p-area">
+        <div class="form-row">
+          <div><label>Date</label><input type="date" id="p-date"></div>
+          <div><label>Time</label><input type="time" id="p-time" value="08:30"></div>
+        </div>
+        <label>Seats available</label>
+        <select id="p-seats"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="postRide()">Post ride</button>
+      </div>
+    </div>
+
+    <div id="view-profile" class="hidden">
+      <div class="card profile-hero" id="profile-card"></div>
+      <div class="card" id="profile-details"></div>
+      <button class="btn btn-ghost" style="width:100%;margin-bottom:10px" onclick="resetData()">Reset demo data</button>
+      <div id="admin-link" class="hidden">
+        <button class="btn btn-primary" style="width:100%" onclick="showAdmin()">Admin dashboard</button>
+      </div>
+    </div>
+
+    <div id="view-admin" class="hidden">
+      <div class="stats">
+        <div class="stat"><div class="stat-n" id="adm-active">0</div><div class="stat-l">Active today</div></div>
+        <div class="stat"><div class="stat-n" id="adm-users">0</div><div class="stat-l">Users</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Broadcast announcement</div>
+        <textarea id="adm-msg" rows="3" placeholder="Message to all employees…"></textarea>
+        <button class="btn btn-primary" style="margin-top:12px" onclick="broadcast()">Send to all</button>
+      </div>
+    </div>
+  </main>
+
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="nav-item on" data-view="home" onclick="showView('home')">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Home
+    </button>
+    <button class="nav-item" data-view="search" onclick="showView('search')">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </button>
+    <button class="nav-item" data-view="post" onclick="showView('post')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+      Post
+    </button>
+    <button class="nav-item" data-view="profile" onclick="showView('profile')">
+      <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Profile
+    </button>
+  </nav>
+</div>
+
+<div id="modal" class="hidden"></div>
+
+<script>
+const CREDS=[
+  {id:"employee",pass:"RideShare@2025",name:"Priya Joshi",role:"employee",area:"HSR Layout"},
+  {id:"EMP-0012",pass:"RideShare@2025",name:"Priya Joshi",role:"employee",area:"HSR Layout"},
+  {id:"EMP-0042",pass:"RideShare@2025",name:"Rahul Kumar",role:"employee",area:"HSR Layout"},
+  {id:"EMP-0003",pass:"RideShare@2025",name:"Sunita Acharya",role:"employee",area:"BTM Layout"},
+  {id:"admin",pass:"Admin@2025",name:"Anita Sharma",role:"admin",area:"Koramangala"},
+  {id:"EMP-0099",pass:"Admin@2025",name:"Anita Sharma",role:"admin",area:"Koramangala"}
+];
+const SEED=[
+  {id:1,poster:"Rahul Kumar",dept:"Engineering",area:"HSR Layout",time:"08:30",seats:2,total:3,type:"CAR",vehicle:"Honda City"},
+  {id:2,poster:"Sunita Acharya",dept:"Finance",area:"BTM Layout",time:"09:00",seats:0,total:1,type:"CAR",vehicle:"Maruti Swift"},
+  {id:3,poster:"Vikram Nair",dept:"Product",area:"Whitefield",time:"08:00",seats:3,total:4,type:"CAR",vehicle:"Toyota Innova"},
+  {id:4,poster:"Meena Rao",dept:"Operations",area:"Koramangala",time:"09:30",seats:2,total:2,type:"CAR",vehicle:"Hyundai i20"},
+  {id:5,poster:"Arjun Patel",dept:"Sales",area:"Indiranagar",time:"08:45",seats:2,total:2,type:"CAB",vehicle:"Shared cab"}
+];
+const TITLES={home:"Home",search:"Search",post:"Post ride",profile:"Profile",admin:"Admin"};
+const AVATAR_BG=["#EFF6FC","#DFF6DD","#FFF4CE","#F4EFF9","#FDE7E9"];
+const AVATAR_FG=["#005A9E","#107C10","#7A5200","#5C2D91","#A4262C"];
+
+let session=null;
+let rides=JSON.parse(localStorage.getItem('rs-rides')||'null')||SEED;
+let currentView='home';
+
+function initials(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}
+function avatarColor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%AVATAR_BG.length;return{bg:AVATAR_BG[h],fg:AVATAR_FG[h]}}
+function save(){localStorage.setItem('rs-rides',JSON.stringify(rides));localStorage.setItem('rs-session',JSON.stringify(session))}
+function loadSession(){try{session=JSON.parse(localStorage.getItem('rs-session'))}catch(e){session=null}}
+function tomorrow(){const d=new Date();d.setDate(d.getDate()+1);return d.toISOString().split('T')[0]}
+
+function doLogin(){
+  const id=document.getElementById('login-id').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  const u=CREDS.find(c=>c.id.toLowerCase()===id.toLowerCase()&&c.pass===pass);
+  const err=document.getElementById('login-err');
+  if(!u){err.textContent='Invalid credentials. Try employee / RideShare@2025';err.classList.remove('hidden');return}
+  err.classList.add('hidden');session=u;save();bootApp();
+}
+function logout(){session=null;save();document.getElementById('screen-app').classList.add('hidden');document.getElementById('screen-login').classList.remove('hidden')}
+function bootApp(){
+  document.getElementById('screen-login').classList.add('hidden');
+  document.getElementById('screen-app').classList.remove('hidden');
+  const c=avatarColor(session.name);
+  document.getElementById('greeting').textContent='Good morning, '+session.name.split(' ')[0];
+  const av=document.getElementById('header-avatar');
+  av.textContent=initials(session.name);av.style.background=c.bg;av.style.color=c.fg;
+  document.getElementById('s-date').value=tomorrow();
+  document.getElementById('s-area').value=session.area;
+  document.getElementById('p-area').value=session.area;
+  document.getElementById('p-date').value=tomorrow();
+  document.getElementById('admin-link').classList.toggle('hidden',session.role!=='admin');
+  renderHome();showView('home');
+}
+function showView(v){
+  currentView=v;
+  ['home','search','post','profile','admin'].forEach(x=>document.getElementById('view-'+x).classList.add('hidden'));
+  document.getElementById('view-'+v).classList.remove('hidden');
+  document.getElementById('page-title').textContent=TITLES[v]||v;
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('on',b.dataset.view===v));
+  document.getElementById('bottom-nav').classList.toggle('hidden',v==='admin');
+  document.querySelector('.app-main').scrollTop=0;
+  if(v==='home')renderHome();
+  if(v==='search')doSearch();
+  if(v==='profile')renderProfile();
+  if(v==='admin')renderAdmin();
+}
+function renderHome(){
+  const open=rides.filter(r=>r.seats>0);
+  document.getElementById('st-rides').textContent=open.length;
+  document.getElementById('st-seats').textContent=open.reduce((s,r)=>s+r.seats,0);
+  const list=document.getElementById('ride-list');
+  list.innerHTML=rides.slice(0,5).map(rideCard).join('')||
+    '<div class="empty-state"><p>No rides yet. Post one or check back later.</p></div>';
+}
+function rideCard(r){
+  const full=r.seats<=0;
+  const c=avatarColor(r.poster);
+  const seatCls=full?'seats-full':r.seats===1?'seats-warn':'seats-ok';
+  const seatTxt=full?'Full':r.seats+' seat'+(r.seats!==1?'s':'');
+  return `<div class="ride${full?' dim':''}" onclick="openRide(${r.id})" role="button" tabindex="0">
+    <div class="ride-top">
+      <div class="ride-avatar" style="background:${c.bg};color:${c.fg}">${initials(r.poster)}</div>
+      <div class="ride-body">
+        <div class="ride-name">${r.poster}</div>
+        <div class="ride-dept">${r.dept}</div>
+        <div class="ride-loc">📍 ${r.area}</div>
+      </div>
+      <div class="ride-right">
+        <div class="ride-time">${r.time}</div>
+        <div class="ride-seats ${seatCls}">${seatTxt}</div>
+      </div>
+    </div>
+    <div class="ride-footer">
+      <span class="pill pill-type">${r.type==='CAR'?'🚗 Car':'🚕 Cab'}</span>
+      <span class="pill ${full?'pill-full':'pill-active'}">${full?'Full':'Active'}</span>
+      <span class="pill" style="background:var(--bg-s);color:var(--text2)">${r.vehicle}</span>
+    </div></div>`;
+}
+function doSearch(){
+  const area=document.getElementById('s-area').value.toLowerCase();
+  const filtered=rides.filter(r=>!area||r.area.toLowerCase().includes(area));
+  document.getElementById('search-summary').textContent=filtered.length+' rides near '+document.getElementById('s-area').value;
+  document.getElementById('search-results').innerHTML=filtered.map(rideCard).join('')||
+    '<div class="empty-state"><p>No rides found. Try a broader area or time.</p></div>';
+  if(currentView!=='search')showView('search');
+}
+function openRide(id){
+  const r=rides.find(x=>x.id===id);if(!r)return;
+  const c=avatarColor(r.poster);
+  document.getElementById('modal').className='sheet-bg';
+  document.getElementById('modal').innerHTML=`
+    <div class="sheet" onclick="event.stopPropagation()">
+      <div class="sheet-handle"></div>
+      <div style="display:flex;gap:14px;align-items:center;margin-bottom:16px">
+        <div class="ride-avatar" style="width:52px;height:52px;font-size:16px;background:${c.bg};color:${c.fg}">${initials(r.poster)}</div>
+        <div><h2>${r.poster}</h2><div class="sheet-meta">${r.dept} · ${r.vehicle}</div></div>
+      </div>
+      <div class="sheet-grid">
+        <div class="sheet-cell"><label>Pickup area</label><div>📍 ${r.area}</div></div>
+        <div class="sheet-cell"><label>Departure</label><div>🕐 ${r.time}</div></div>
+        <div class="sheet-cell"><label>Seats</label><div>💺 ${r.seats} available</div></div>
+        <div class="sheet-cell"><label>Type</label><div>${r.type}</div></div>
+      </div>
+      <p class="sheet-note">Exact address is never shown — only area name.</p>
+      <button class="btn btn-primary" onclick="requestRide('${r.poster}',${r.seats})">${r.seats>0?'Request this ride':'Join waitlist'}</button>
+      <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="closeModal()">Close</button>
+    </div>`;
+  document.getElementById('modal').onclick=closeModal;
+}
+function requestRide(name,seats){
+  closeModal();
+  toast(seats>0?`Request sent to ${name}`:`Added to waitlist for ${name}`);
+}
+function toast(msg){
+  const t=document.createElement('div');
+  t.textContent=msg;
+  t.style.cssText='position:fixed;bottom:calc(var(--nav-h) + var(--safe-b) + 16px);left:50%;transform:translateX(-50%);background:#201F1E;color:#fff;padding:12px 20px;border-radius:24px;font-size:14px;font-weight:500;z-index:200;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)';
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+function closeModal(){document.getElementById('modal').className='hidden';document.getElementById('modal').innerHTML=''}
+function postRide(){
+  rides.unshift({id:Date.now(),poster:session.name,dept:'Engineering',area:document.getElementById('p-area').value,time:document.getElementById('p-time').value,seats:+document.getElementById('p-seats').value,total:+document.getElementById('p-seats').value,type:'CAR',vehicle:'My car'});
+  save();toast('Ride posted!');renderHome();showView('home');
+}
+function renderProfile(){
+  const c=avatarColor(session.name);
+  document.getElementById('profile-card').innerHTML=`
+    <div class="profile-avatar" style="background:${c.bg};color:${c.fg}">${initials(session.name)}</div>
+    <div class="profile-name">${session.name}</div>
+    <div class="profile-meta">${session.id} · ${session.role}</div>`;
+  document.getElementById('profile-details').innerHTML=`
+    <div class="profile-row"><span>Home area</span><span>${session.area}</span></div>
+    <div class="profile-row"><span>Role</span><span style="text-transform:capitalize">${session.role}</span></div>
+    <div class="profile-row"><span>Account</span><span style="color:var(--green)">● Verified</span></div>
+    <button class="btn btn-ghost" style="width:100%;margin-top:14px;color:var(--red);border-color:var(--red-l)" onclick="logout()">Sign out</button>`;
+}
+function showAdmin(){showView('admin')}
+function renderAdmin(){
+  document.getElementById('adm-active').textContent=rides.filter(r=>r.seats>0).length;
+  document.getElementById('adm-users').textContent=CREDS.length;
+}
+function broadcast(){const m=document.getElementById('adm-msg').value.trim();if(m){toast('Broadcast sent');document.getElementById('adm-msg').value=''}}
+function resetData(){if(confirm('Reset all demo data?')){rides=[...SEED];save();renderHome();toast('Data reset')}}
+
+loadSession();
+if(session)bootApp();
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin()});
+document.getElementById('login-id').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('login-pass').focus()});
+</script>
+</body>
+</html>

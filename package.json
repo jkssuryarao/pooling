@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "npx serve out",
+    "start": "npx serve out -p 3000",
+    "static": "npx serve static -p 3000",
     "lint": "next lint"
   },
   "dependencies": {
