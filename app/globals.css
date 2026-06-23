@@ -3,14 +3,26 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-surface-hover text-text font-sans text-sm leading-relaxed antialiased;
+    min-height: 100dvh;
+    overscroll-behavior: none;
   }
 }
 
 @layer utilities {
   .safe-bottom {
     padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .app-shell {
+    @apply mx-auto flex min-h-dvh max-w-lg flex-col bg-surface-hover;
   }
 }
 

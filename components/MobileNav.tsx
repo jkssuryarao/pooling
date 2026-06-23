@@ -16,15 +16,15 @@ export function MobileNav() {
   if (pathname === "/login") return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface safe-bottom">
-      <div className="mx-auto flex max-w-lg items-stretch justify-around">
+    <nav className="fixed bottom-0 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 border-t border-border bg-surface/95 backdrop-blur-md safe-bottom">
+      <div className="flex items-stretch justify-around pb-[env(safe-area-inset-bottom,0px)]">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
             <Link
               key={href}
               href={href}
-              className={`flex min-h-[56px] min-w-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-[10px] font-medium ${
+              className={`flex min-h-[56px] min-w-[56px] flex-1 flex-col items-center justify-center gap-1 text-[10px] font-medium transition-colors active:opacity-70 ${
                 active ? "text-accent" : "text-text-muted"
               }`}
               aria-label={label}

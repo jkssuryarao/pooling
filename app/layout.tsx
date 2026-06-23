@@ -11,13 +11,15 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0078D4",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>
-        <div className="h-1 bg-accent" />
+      <body className="bg-surface-hover">
+        <div className="h-1 bg-accent safe-top" />
         <Providers>{children}</Providers>
       </body>
     </html>
