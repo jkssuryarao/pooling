@@ -24,7 +24,6 @@ export default function LoginPage() {
       return;
     }
     router.push("/");
-    router.refresh();
   }
 
   return (
@@ -52,7 +51,7 @@ export default function LoginPage() {
               value={employeeId}
               onChange={(e) => setEmployeeId(e.target.value)}
               className="w-full rounded border border-border px-3 py-2.5 text-sm focus:border-accent focus:outline-none"
-              placeholder="EMP-0012"
+              placeholder="employee or EMP-0012"
               autoComplete="username"
               required
             />
@@ -99,9 +98,9 @@ export default function LoginPage() {
           <strong>Demo logins:</strong>
           <table className="mt-1.5 w-full text-left">
             <tbody>
+              <tr><td className="pr-2 font-medium">employee</td><td>RideShare@2025</td><td className="text-text-muted">Employee</td></tr>
+              <tr><td className="pr-2 font-medium">admin</td><td>Admin@2025</td><td className="text-text-muted">Admin</td></tr>
               <tr><td className="pr-2 font-medium">EMP-0012</td><td>RideShare@2025</td><td className="text-text-muted">Priya</td></tr>
-              <tr><td className="pr-2 font-medium">EMP-0042</td><td>RideShare@2025</td><td className="text-text-muted">Rahul</td></tr>
-              <tr><td className="pr-2 font-medium">EMP-0003</td><td>RideShare@2025</td><td className="text-text-muted">Sunita</td></tr>
               <tr><td className="pr-2 font-medium">EMP-0099</td><td>Admin@2025</td><td className="text-text-muted">Admin</td></tr>
             </tbody>
           </table>

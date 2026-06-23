@@ -9,6 +9,14 @@ export interface Credential {
 
 export const SEED_CREDENTIALS: Credential[] = [
   {
+    employeeId: "employee",
+    password: "RideShare@2025",
+    userId: "user-demo",
+    role: "employee",
+    name: "Priya Joshi",
+    email: "priya.joshi@tally.com",
+  },
+  {
     employeeId: "EMP-0012",
     password: "RideShare@2025",
     userId: "user-demo",
@@ -31,6 +39,14 @@ export const SEED_CREDENTIALS: Credential[] = [
     role: "employee",
     name: "Sunita Acharya",
     email: "sunita.acharya@tally.com",
+  },
+  {
+    employeeId: "admin",
+    password: "Admin@2025",
+    userId: "user-admin",
+    role: "admin",
+    name: "Anita Sharma",
+    email: "anita.sharma@tally.com",
   },
   {
     employeeId: "EMP-0099",
